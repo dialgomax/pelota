@@ -12,15 +12,20 @@
   <p class="sub">15 minutos por alquiler</p>
 
   <form id="formulario" class="nuevo">
-    <label for="pelota">Número de pelota</label>
-    <div class="fila">
+    <div class="campo">
+      <label for="pelota">Número de pelota</label>
       <input id="pelota" inputmode="numeric" autocomplete="off" required autofocus>
-      <button class="inicio">Iniciar</button>
     </div>
+    <div class="campo">
+      <label for="precio">Precio a cobrar</label>
+      <input id="precio" inputmode="numeric" autocomplete="off" placeholder="$ 5" required>
+    </div>
+    <button class="inicio">Iniciar</button>
     <p id="error" class="error" hidden></p>
   </form>
 
   <p id="vacio" class="vacio">Aún no hay alquileres. Escribe un número de pelota y presiona Iniciar.</p>
+  <p id="total" class="total" hidden></p>
   <ul id="lista" class="lista"></ul>
 </main>
 <script src="script.js"></script>

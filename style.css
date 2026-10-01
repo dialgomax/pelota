@@ -9,17 +9,18 @@ main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
 h1{font-size:2rem;margin:0;letter-spacing:-.02em}
 .sub{margin:.2rem 0 1.5rem;color:#4b6785}
 
-.nuevo{background:var(--blanco);border:2px solid var(--borde);border-radius:16px;padding:16px}
-.nuevo label{font-weight:700;display:block;margin-bottom:8px}
-.fila{display:flex;gap:10px}
-input{flex:1;min-width:0;font-size:1.6rem;padding:10px 14px;border:2px solid var(--borde);
+.nuevo{background:var(--blanco);border:2px solid var(--borde);border-radius:16px;padding:16px;
+  display:grid;gap:14px}
+.campo label{font-weight:700;display:block;margin-bottom:8px}
+input{width:100%;font-size:1.6rem;padding:10px 14px;border:2px solid var(--borde);
   border-radius:10px;font-family:inherit;color:var(--tinta)}
 button{font-family:inherit;font-weight:700;cursor:pointer;border:0;border-radius:10px}
 :focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
-.inicio{background:var(--azul);color:#fff;font-size:1.2rem;padding:0 28px}
+.inicio{background:var(--azul);color:#fff;font-size:1.2rem;padding:12px 28px;width:100%}
 .inicio:hover{background:#095aa9}
-.error{color:var(--rojo);font-weight:700;margin:10px 0 0}
+.error{color:var(--rojo);font-weight:700;margin:0}
 .vacio{text-align:center;color:#4b6785;margin:2rem 0}
+.total{text-align:right;font-weight:800;color:var(--verde);margin:14px 2px 0;font-size:1.05rem}
 
 .lista{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:12px}
 .item{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;

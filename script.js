@@ -1,18 +1,21 @@
 const DURACION = 15 * 60 * 1000; // 15 minutos en milisegundos
 const CLAVE = 'alquileres-pelotas';
-const CLAVE_ELIMINAR = 'Tv3969i'; // contraseña para eliminar registros, cámbiala aquí
+const CLAVE_ADMIN = 'T3969i'; // contraseña para eliminar registros o desmarcar un pago, cámbiala aquí
 
 const form = document.getElementById('formulario');
 const inputPelota = document.getElementById('pelota');
+const inputPrecio = document.getElementById('precio');
 const errorEl = document.getElementById('error');
 const lista = document.getElementById('lista');
 const vacio = document.getElementById('vacio');
+const totalEl = document.getElementById('total');
 
 let alquileres = [];
 try { alquileres = JSON.parse(localStorage.getItem(CLAVE)) || []; } catch (e) {}
 const guardar = () => localStorage.setItem(CLAVE, JSON.stringify(alquileres));
 const hora = ms => new Date(ms).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 const escapar = t => t.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dinero = n => '$' + Number(n || 0).toLocaleString('es-CO');
 
 // --- Alarma sonora al terminar el tiempo (no necesita archivos externos) ---
 const alarmados = new Set(); // ids que ya sonaron, para no repetir la alarma
@@ -46,20 +49,23 @@ document.addEventListener('click', () => {
 form.addEventListener('submit', e => {
   e.preventDefault();
   const pelota = inputPelota.value.trim();
+  const precio = Number(inputPrecio.value);
   if (!pelota) return mostrarError('Escribe el número de la pelota.');
+  if (!inputPrecio.value || isNaN(precio) || precio <= 0) return mostrarError('Escribe el precio a cobrar.');
   if (alquileres.some(a => a.pelota === pelota && Date.now() < a.fin)) {
     return mostrarError(`La pelota ${pelota} ya está en alquiler.`);
   }
   const inicio = Date.now();
   alquileres.push({
     id: String(inicio) + Math.random().toString(36).slice(2, 6),
-    pelota, inicio, fin: inicio + DURACION,
+    pelota, precio, inicio, fin: inicio + DURACION,
     pagado: false,
     metodo: 'efectivo'
   });
   guardar();
   mostrarError('');
   inputPelota.value = '';
+  inputPrecio.value = '';
   inputPelota.focus();
   dibujar();
 });
@@ -77,15 +83,22 @@ lista.addEventListener('click', e => {
   const a = alquileres.find(x => x.id === id);
   if (btn.dataset.accion === 'pagar') {
     if (!a.pagado) {
+      // Marcar como pagado: solo pide confirmar el método
       const metodoTexto = a.metodo === 'nequi' ? 'Nequi' : 'Efectivo';
-      const confirmado = confirm(`¿Confirmas que la pelota ${a.pelota} pagó por ${metodoTexto}?`);
+      const confirmado = confirm(`¿Confirmas que la pelota ${a.pelota} pagó ${dinero(a.precio)} por ${metodoTexto}?`);
       if (!confirmado) return;
+      a.pagado = true;
+    } else {
+      // Desmarcar un pago ya confirmado: pide contraseña
+      const clave = prompt('Este pago ya está confirmado. Escribe la contraseña para desmarcarlo:');
+      if (clave === null) return; // canceló
+      if (clave !== CLAVE_ADMIN) { alert('Contraseña incorrecta.'); return; }
+      a.pagado = false;
     }
-    a.pagado = !a.pagado;
   } else if (btn.dataset.accion === 'borrar') {
     const clave = prompt('Escribe la contraseña para eliminar este registro:');
     if (clave === null) return; // canceló
-    if (clave !== CLAVE_ELIMINAR) { alert('Contraseña incorrecta.'); return; }
+    if (clave !== CLAVE_ADMIN) { alert('Contraseña incorrecta.'); return; }
     if (!confirm('¿Eliminar este registro?')) return;
     alquileres = alquileres.filter(x => x.id !== id);
   }
@@ -105,12 +118,18 @@ lista.addEventListener('change', e => {
 function dibujar() {
   const hay = alquileres.length > 0;
   vacio.hidden = hay;
+
+  const totalCobrado = alquileres.filter(a => a.pagado).reduce((s, a) => s + Number(a.precio || 0), 0);
+  totalEl.hidden = !hay;
+  totalEl.textContent = `Total cobrado: ${dinero(totalCobrado)}`;
+
   lista.innerHTML = [...alquileres].reverse().map(a => `
     <li class="item" data-id="${a.id}" data-fin="${a.fin}">
       <div class="num">${escapar(a.pelota)}</div>
       <div class="datos">
         <span>Inicio <b>${hora(a.inicio)}</b></span>
         <span>Fin <b>${hora(a.fin)}</b></span>
+        <span>Precio <b>${dinero(a.precio)}</b></span>
         <span class="tiempo">--:--</span>
         <span class="estado">En curso</span>
       </div>
