@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alquiler de pelotas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>Alquiler de pelotas</h1>
+  <p class="sub">15 minutos por alquiler</p>
+
+  <form id="formulario" class="nuevo">
+    <label for="pelota">Número de pelota</label>
+    <div class="fila">
+      <input id="pelota" inputmode="numeric" autocomplete="off" required autofocus>
+      <button class="inicio">Iniciar</button>
+    </div>
+    <p id="error" class="error" hidden></p>
+  </form>
+
+  <p id="vacio" class="vacio">Aún no hay alquileres. Escribe un número de pelota y presiona Iniciar.</p>
+  <ul id="lista" class="lista"></ul>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
